@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Demo | Stephen Groff</title>
+<meta name="description" content="Sample-data demo of a multi-source data pipeline built with Claude Code: collect, filter, de-duplicate, score, tier and explain every record.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://groffia.github.io/pipeline-demo/">
+<meta property="og:title" content="Multi-source data pipeline: sample-data demo">
+<meta property="og:description" content="Collect from four sources, apply rules, merge duplicates, skip what was already shown, then score, tier and explain every record.">
+<meta property="og:image" content="https://groffia.github.io/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E5BB8'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' fill='white' text-anchor='middle'%3ESG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --sunk:#EBEFF4; --ink:#141D27; --muted:#566373; --rule:#D9DFE6;
+  --accent:#1E5BB8; --accent-soft:#E6EEFA; --ok:#23704F; --ok-soft:#E3F2EA; --warn:#8A5A00; --warn-soft:#FBF0D9; --bad:#A33A2A; --bad-soft:#FBE7E3;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1319; --surface:#151C24; --sunk:#1B232D; --ink:#E5EAF0; --muted:#97A3B1; --rule:#28323D;
+    --accent:#86B4FF; --accent-soft:#1A2A42; --ok:#71CC9E; --ok-soft:#14291F; --warn:#F2C46B; --warn-soft:#2E2412; --bad:#FF9B8A; --bad-soft:#3A1C17; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1319; --surface:#151C24; --sunk:#1B232D; --ink:#E5EAF0; --muted:#97A3B1; --rule:#28323D;
+  --accent:#86B4FF; --accent-soft:#1A2A42; --ok:#71CC9E; --ok-soft:#14291F; --warn:#F2C46B; --warn-soft:#2E2412; --bad:#FF9B8A; --bad-soft:#3A1C17; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55}
+.wrap{max-width:1080px; margin:0 auto; padding:40px 16px 72px; display:flex; flex-direction:column; gap:44px}
+h1,h2,h3{font-family:var(--display); margin:0; line-height:1.15; text-wrap:balance}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.label{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+header{display:flex; flex-direction:column; gap:14px}
+.back{font-size:15px; text-decoration:none}
+header h1{font-size:clamp(32px,5.5vw,48px); font-weight:700; letter-spacing:-.015em}
+.lede{font-size:17px; max-width:70ch}
+.note{font-size:14px; color:var(--muted); max-width:70ch; padding:10px 14px; border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 6px 6px 0}
+
+section{display:flex; flex-direction:column; gap:18px}
+.head{display:flex; flex-direction:column; gap:6px}
+.head h2{font-size:clamp(22px,3.4vw,28px); font-weight:700}
+.head p{color:var(--muted); max-width:68ch}
+
+.runs{display:inline-flex; background:var(--sunk); border-radius:9px; padding:3px; gap:2px; align-self:flex-start; flex-wrap:wrap}
+.runs button{border:0; background:transparent; padding:7px 14px; border-radius:7px; color:var(--muted); font-weight:600}
+.runs button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgb(0 0 0 / .1)}
+
+.funnel{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px}
+.step{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:4px; min-width:0; position:relative}
+.step .n{font-family:var(--display); font-size:32px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums}
+.step .t{font-size:13px; color:var(--muted); line-height:1.35}
+.step.out .n{color:var(--bad)}
+.step.final{border-color:var(--accent)}
+.step.final .n{color:var(--accent)}
+.tiers{display:flex; gap:6px; flex-wrap:wrap; margin-top:4px}
+
+.tier{display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 6px; border-radius:5px; font-family:var(--mono); font-size:12px; font-weight:500}
+.tier.A{background:var(--ok-soft); color:var(--ok)}
+.tier.B{background:var(--accent-soft); color:var(--accent)}
+.tier.C{background:var(--sunk); color:var(--muted)}
+
+.tablewrap{background:var(--surface); border:1px solid var(--rule); border-radius:10px; overflow:hidden}
+table{width:100%; border-collapse:collapse; font-size:14px}
+th{text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500; padding:10px 12px; border-bottom:1px solid var(--rule); white-space:nowrap}
+td{padding:12px; border-bottom:1px solid var(--rule); vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+.prod b{font-weight:600; display:block}
+.prod span{color:var(--muted); font-size:13px}
+.why{font-size:13.5px}
+.why .gap{color:var(--warn)}
+details{margin-top:6px}
+summary{cursor:pointer; color:var(--accent); font-size:13px}
+.calc{margin-top:6px; display:grid; grid-template-columns:auto auto; gap:2px 14px; font-size:12.5px; font-family:var(--mono); color:var(--muted); justify-content:start}
+.calc b{color:var(--ink); font-weight:500; text-align:right}
+.seen{font-size:12.5px; color:var(--muted)}
+.status{display:flex; gap:4px; flex-wrap:wrap}
+.status button{border:1px solid var(--rule); background:var(--surface); border-radius:6px; padding:3px 8px; font-size:12.5px; color:var(--muted)}
+.status button[aria-pressed="true"]{border-color:var(--accent); color:var(--accent); background:var(--accent-soft); font-weight:600}
+tr.skip td{opacity:.5}
+
+.drops{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+.drop{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; font-size:14px; min-width:0}
+.drop .r{align-self:flex-start; font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:4px; background:var(--bad-soft); color:var(--bad)}
+.drop .r.dup{background:var(--sunk); color:var(--muted)}
+.drop .m{color:var(--muted); font-size:13px}
+
+.rules{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+.card{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.card h3{font-size:17px; font-weight:700}
+.card ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:4px; font-size:14.5px}
+.card p{font-size:14.5px}
+
+.flow{margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; counter-reset:s}
+.flow li{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:14px 16px; font-size:14.5px; counter-increment:s}
+.flow li::before{content:counter(s,decimal-leading-zero); display:block; font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:4px}
+.flow b{font-weight:600}
+
+footer{border-top:1px solid var(--rule); padding-top:18px; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 20px}
+
+@media (max-width:860px){
+  .funnel{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step.final{grid-column:1 / -1}
+  .drops,.rules,.flow{grid-template-columns:minmax(0,1fr)}
+  table,thead,tbody,tr,td{display:block}
+  thead{display:none}
+  tr{border-bottom:1px solid var(--rule); padding:12px 14px; display:grid; grid-template-columns:auto auto auto minmax(0,1fr); gap:6px 10px; align-items:center}
+  tr:last-child{border-bottom:0}
+  td{border:0; padding:0}
+  td[data-k]::before{content:attr(data-k) " "; font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  td.prod,td.why,td.seen,td.status-cell,td.price{grid-column:1 / -1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="back" href="../">← Stephen Groff, online resume</a>
+  <span class="label">Sample-data demo</span>
+  <h1>Multi-source data pipeline</h1>
+  <p class="lede">The pipeline collects records from four sources twice a day, drops records that fail the rules, merges duplicates, skips anything already shown, then scores, tiers and explains every record that's left. The real tool runs as Claude Code skills on a schedule and writes to a database-backed web app.</p>
+  <p class="note">This page replays one sample day. Every supplier and price is made up for Tamsworth Health, a fictional health system buying clinic supplies. The real tool runs on private data.</p>
+</header>
+
+<section aria-labelledby="run">
+  <div class="head">
+    <span class="label">Step through a day</span>
+    <h2 id="run">From raw records to a ranked list</h2>
+    <p>Pick a run. The 1pm run only lists what's new: records already shown at 6am are dropped as seen.</p>
+  </div>
+  <div class="runs" role="group" aria-label="Choose a run">
+    <button data-run="6am" aria-pressed="true">6am run</button>
+    <button data-run="1pm" aria-pressed="false">1pm run</button>
+    <button data-run="all" aria-pressed="false">Whole day</button>
+  </div>
+  <div class="funnel" id="funnel"></div>
+</section>
+
+<section aria-labelledby="list">
+  <div class="head">
+    <span class="label">Output</span>
+    <h2 id="list">Ranked list</h2>
+    <p>Sorted by Want + Match, highest first. Open "Show the math" on any row to see how each score was built. Status buttons work like the real app's, but here they're saved only in your browser.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>#</th><th>Want</th><th>Match</th><th>Tier</th><th>Supplier and item</th><th>Unit price</th><th>Why it scores / gaps</th><th>Seen on</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="dropped">
+  <div class="head">
+    <span class="label">Audit trail</span>
+    <h2 id="dropped">What was dropped, and why</h2>
+    <p>Nothing disappears silently. Every record that doesn't reach the list carries its reason.</p>
+  </div>
+  <div class="drops" id="drops"></div>
+</section>
+
+<section aria-labelledby="rules">
+  <div class="head">
+    <span class="label">The rules</span>
+    <h2 id="rules">Written down once, applied the same way every run</h2>
+    <p>Sample rules for this demo. The real tool reads its rules from a file the same way, so changing a rule never means changing code.</p>
+  </div>
+  <div class="rules" id="rulecards"></div>
+</section>
+
+<section aria-labelledby="how">
+  <div class="head">
+    <span class="label">How it's built</span>
+    <h2 id="how">Claude Code does the steps. The rules decide.</h2>
+  </div>
+  <ol class="flow">
+    <li><b>Scheduled runs.</b> A scheduled task starts the pipeline at 6am and 1pm every day, with no manual trigger.</li>
+    <li><b>Collect through the browser.</b> A custom Claude Code skill reads each source in a real browser over MCP, then pulls the same fields from every record.</li>
+    <li><b>Filter, then merge.</b> Any rule fail drops the record. Records with the same normalized key are merged, keeping every source they came from.</li>
+    <li><b>Seen log.</b> Each listed record's key is appended to a log, so a later run never shows it twice.</li>
+    <li><b>Score with reasons.</b> Want (0–10) and Match (0–5) follow the written rules, and each row carries a one-line reason and its gaps.</li>
+    <li><b>Database-backed board.</b> Results go to a ranked file and a small web app whose status (new, shortlist, skip) lives in a database.</li>
+  </ol>
+</section>
+
+<footer>
+  <span>Sample data only. Suppliers, items and prices are fictional.</span>
+  <a href="../">groffia.github.io</a>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- sample data (all fictional) ---------- */
+  var CATS={
+    gloves:{name:'Nitrile exam gloves, box of 100',target:9.00},
+    pulse:{name:'Fingertip pulse oximeter',target:28.00},
+    spec:{name:'Specimen container 4 oz, case of 100',target:22.00},
+    paper:{name:'Exam table paper, case of 12',target:48.00},
+    sharps:{name:'Sharps container 2 gal',target:6.50},
+    cuff:{name:'Adult BP cuff, reusable',target:14.00}
+  };
+  var SOURCES=['Supplier portal','Distributor marketplace','Purchasing co-op list','Emailed quotes'];
+  var VERIFIED=['Northwind Medical Supply','Woodgrove Clinical','Fabrikam Surgical','Contoso Health Goods','Tailspin Medical','Adventure Works Supply','Litware Clinical Supply','Proseware Health','Wingtip Medical'];
+  var TERMS={'Net 45, contract price':3,'Net 30, free returns':3,'Net 30':2,'Prepaid only':0};
+  /* r: run, src: source index, sup, item, cat (null = not an approved category), price, lead (days), terms, met, gaps */
+  var RAW=[
+    {r:'6am',src:0,sup:'Northwind Medical Supply',item:'Nitrile Exam Gloves, Medium, 100/box',cat:'gloves',price:7.10,lead:2,terms:'Net 30, free returns',met:5,gaps:[]},
+    {r:'6am',src:1,sup:'Northwind Medical Supply',item:'Nitrile exam gloves - medium (box/100)',cat:'gloves',price:7.10,lead:2,terms:'Net 30, free returns',met:5,gaps:[]},
+    {r:'6am',src:2,sup:'Woodgrove Clinical',item:'Fingertip Pulse Oximeter',cat:'pulse',price:24.50,lead:5,terms:'Net 30',met:4,gaps:['no low-perfusion rating']},
+    {r:'6am',src:3,sup:'Fabrikam Surgical',item:'Specimen Container 4 oz, Sterile, 100/case',cat:'spec',price:23.80,lead:3,terms:'Net 45, contract price',met:5,gaps:[]},
+    {r:'6am',src:0,sup:'Contoso Health Goods',item:'Exam Table Paper, Crepe, 12 rolls',cat:'paper',v:'crepe',price:41.00,lead:9,terms:'Prepaid only',met:4,gaps:['crepe only, smooth requested']},
+    {r:'6am',src:1,sup:'Tailspin Medical',item:'Sharps Container 2 gal',cat:'sharps',price:8.40,lead:4,terms:'Net 30',met:5,gaps:[]},
+    {r:'6am',src:1,sup:'Wingtip Medical',item:'Ergonomic Office Chair',cat:null,price:189.00,lead:6,terms:'Net 30',met:0,gaps:[]},
+    {r:'6am',src:2,sup:'Adventure Works Supply',item:'Adult BP Cuff, Reusable',cat:'cuff',price:12.20,lead:21,terms:'Net 30',met:5,gaps:[]},
+    {r:'6am',src:3,sup:'Litware Clinical Supply',item:'Adult Blood Pressure Cuff, Reusable',cat:'cuff',price:13.60,lead:4,terms:'Net 30',met:5,gaps:[]},
+    {r:'6am',src:0,sup:'Proseware Health',item:'Pulse Oximeter, Fingertip, Pediatric and Adult',cat:'pulse',price:31.00,lead:2,terms:'Net 30, free returns',met:5,gaps:[]},
+    {r:'6am',src:3,sup:'Woodgrove Clinical',item:'Fingertip pulse oximeter',cat:'pulse',price:24.50,lead:5,terms:'Net 30',met:4,gaps:['no low-perfusion rating']},
+    {r:'6am',src:1,sup:'Trey Clinical',item:'Nitrile Gloves 100ct',cat:'gloves',price:6.20,lead:3,terms:'Prepaid only',met:4,gaps:[]},
+    {r:'6am',src:0,sup:'Fabrikam Surgical',item:'Sharps Container, 2 Gallon, Red',cat:'sharps',price:5.90,lead:6,terms:'Net 45, contract price',met:4,gaps:['no wall bracket']},
+    {r:'6am',src:3,sup:'Contoso Health Goods',item:'Exam Table Paper, Smooth, 12/case',cat:'paper',v:'smooth',price:52.00,lead:3,terms:'Net 30',met:5,gaps:[]},
+    {r:'1pm',src:1,sup:'Northwind Medical Supply',item:'Nitrile Exam Gloves, Medium, 100/box',cat:'gloves',price:7.10,lead:2,terms:'Net 30, free returns',met:5,gaps:[]},
+    {r:'1pm',src:0,sup:'Tailspin Medical',item:'Specimen Container 4 oz, 100/case',cat:'spec',price:19.40,lead:12,terms:'Net 30',met:3,gaps:['non-sterile','no tamper seal']},
+    {r:'1pm',src:2,sup:'Litware Clinical Supply',item:'Nitrile Exam Gloves, Medium, 100',cat:'gloves',price:8.10,lead:3,terms:'Net 30, free returns',met:4,gaps:['3.5 mil, 4 mil requested']},
+    {r:'1pm',src:3,sup:'Adventure Works Supply',item:'Sharps Container 2 gal',cat:'sharps',price:6.10,lead:10,terms:'Prepaid only',met:5,gaps:[]},
+    {r:'1pm',src:1,sup:'Wingtip Medical',item:'Coffee service, monthly',cat:null,price:65.00,lead:2,terms:'Net 30',met:0,gaps:[]},
+    {r:'1pm',src:0,sup:'Proseware Health',item:'Pulse Oximeter, Fingertip, Pediatric and Adult',cat:'pulse',price:31.00,lead:2,terms:'Net 30, free returns',met:5,gaps:[]},
+    {r:'1pm',src:1,sup:'Litware Clinical Supply',item:'Nitrile exam gloves, medium, box of 100',cat:'gloves',price:8.10,lead:3,terms:'Net 30, free returns',met:4,gaps:['3.5 mil, 4 mil requested']}
+  ];
+
+  /* ---------- rules ---------- */
+  var RULES={priceCap:1.20,leadMax:14};
+  /* identity key: supplier + item type + variant, so different wording of the same product merges */
+  function key(x){return x.sup.toLowerCase()+'|'+x.cat+'|'+(x.v||'')}
+  function priceScore(ratio){return ratio<=0.85?4:ratio<=0.95?3:ratio<=1.05?2:ratio<=1.20?1:0}
+  function leadScore(d){return d<=3?3:d<=7?2:d<=14?1:0}
+  function tierOf(w,m){return (w>=8&&m>=4)?'A':(w+m>=10)?'B':'C'}
+  function filterFail(x){
+    if(!x.cat)return 'Category not on the approved list';
+    if(VERIFIED.indexOf(x.sup)<0)return 'Supplier not verified';
+    var ratio=x.price/CATS[x.cat].target;
+    if(ratio>RULES.priceCap)return 'Price '+Math.round(ratio*100)+'% of target (cap 120%)';
+    if(x.lead>RULES.leadMax)return 'Lead time '+x.lead+' days (max 14)';
+    return null;
+  }
+
+  /* ---------- pipeline: runs in order so the seen log carries from 6am to 1pm ---------- */
+  function runPipeline(){
+    var seen={},out={'6am':null,'1pm':null},num=0;
+    ['6am','1pm'].forEach(function(run){
+      var raw=RAW.filter(function(x){return x.r===run});
+      var res={collected:raw.length,failed:[],dups:[],seenDrops:[],listed:[]};
+      var groups={},order=[];
+      raw.forEach(function(x){
+        var why=filterFail(x);
+        if(why){res.failed.push({x:x,why:why});return}
+        var k=key(x);
+        if(groups[k]){groups[k].sources.push(SOURCES[x.src]);res.dups.push({x:x,why:'Same record as '+SOURCES[groups[k].src]+' copy'});return}
+        groups[k]={rec:x,src:x.src,sources:[SOURCES[x.src]]};order.push(k);
+      });
+      order.forEach(function(k){
+        var g=groups[k],x=g.rec;
+        if(seen[k]){res.seenDrops.push({x:x,why:'Already shown in the '+seen[k]+' run'});return}
+        seen[k]=run;
+        var ratio=x.price/CATS[x.cat].target,ps=priceScore(ratio),ls=leadScore(x.lead),ts=TERMS[x.terms];
+        var want=ps+ls+ts,match=x.met;
+        res.listed.push({x:x,sources:g.sources,ratio:ratio,ps:ps,ls:ls,ts:ts,want:want,match:match,tier:tierOf(want,match),run:run,id:k});
+      });
+      res.listed.sort(function(a,b){return (b.want+b.match)-(a.want+a.match)||b.match-a.match||a.ratio-b.ratio});
+      res.listed.forEach(function(r){r.num=++num});
+      out[run]=res;
+    });
+    return out;
+  }
+  var RES=runPipeline();
+
+  /* ---------- per-viewer status (browser only, optional) ---------- */
+  var status={};
+  try{status=JSON.parse(localStorage.getItem('pd-status')||'{}')||{}}catch(e){status={}}
+  function saveStatus(){try{localStorage.setItem('pd-status',JSON.stringify(status))}catch(e){}}
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function money(n){return '$'+n.toFixed(2)}
+  function pick(run){
+    if(run!=='all')return RES[run];
+    var a=RES['6am'],b=RES['1pm'];
+    var listed=a.listed.concat(b.listed).sort(function(x,y){return (y.want+y.match)-(x.want+x.match)||y.match-x.match||x.ratio-y.ratio});
+    return {collected:a.collected+b.collected,failed:a.failed.concat(b.failed),dups:a.dups.concat(b.dups),seenDrops:a.seenDrops.concat(b.seenDrops),listed:listed};
+  }
+
+  var current='6am';
+  function render(){
+    var r=pick(current),t={A:0,B:0,C:0};
+    r.listed.forEach(function(x){t[x.tier]++});
+    document.getElementById('funnel').innerHTML=
+      step('','Collected',r.collected,'raw records from 4 sources')+
+      step('out','Failed a rule',r.failed.length,'category, supplier, price or lead time')+
+      step('out','Duplicates merged',r.dups.length,'same record from another source')+
+      step('out','Already seen',r.seenDrops.length,'shown in an earlier run')+
+      '<div class="step final"><span class="label">Listed</span><span class="n">'+r.listed.length+'</span><span class="t">ranked and explained</span><span class="tiers">'+
+        ['A','B','C'].map(function(k){return '<span class="tier '+k+'">'+k+' '+t[k]+'</span>'}).join('')+'</span></div>';
+
+    document.getElementById('rows').innerHTML=r.listed.map(function(x){
+      var st=status[x.id]||'new',c=CATS[x.x.cat];
+      var why=(x.ps>=3?'Price under target':x.ps===2?'Price on target':'Price over target')+'; '+(x.ls>=3?'ships in '+x.x.lead+' days':x.ls===2?'ships within a week':'slow to ship ('+x.x.lead+' days)')+'; '+x.x.terms+'.';
+      var gaps=x.x.gaps.length?' <span class="gap">Gaps: '+esc(x.x.gaps.join(', '))+'.</span>':'';
+      return '<tr class="'+(st==='skip'?'skip':'')+'">'+
+        '<td class="num" data-k="#">'+x.num+'</td>'+
+        '<td class="num" data-k="Want">'+x.want+'</td>'+
+        '<td class="num" data-k="Match">'+x.match+'</td>'+
+        '<td><span class="tier '+x.tier+'">'+x.tier+'</span></td>'+
+        '<td class="prod"><b>'+esc(x.x.sup)+'</b><span>'+esc(x.x.item)+'</span></td>'+
+        '<td class="num price" data-k="Unit price">'+money(x.x.price)+' <span class="seen">vs '+money(c.target)+' target</span></td>'+
+        '<td class="why">'+esc(why)+gaps+
+          '<details><summary>Show the math</summary><div class="calc">'+
+            '<span>Price '+Math.round(x.ratio*100)+'% of target</span><b>'+x.ps+' / 4</b>'+
+            '<span>Lead time '+x.x.lead+' days</span><b>'+x.ls+' / 3</b>'+
+            '<span>Terms: '+esc(x.x.terms)+'</span><b>'+x.ts+' / 3</b>'+
+            '<span>Want</span><b>'+x.want+' / 10</b>'+
+            '<span>Spec items met</span><b>'+x.match+' / 5</b>'+
+            '<span>Tier rule</span><b>'+x.tier+'</b>'+
+          '</div></details></td>'+
+        '<td class="seen">'+esc(x.sources.join(', '))+(current==='all'?'<br>'+x.run+' run':'')+'</td>'+
+        '<td class="status-cell"><div class="status" role="group" aria-label="Status">'+
+          ['new','shortlist','skip'].map(function(s){return '<button data-id="'+esc(x.id)+'" data-s="'+s+'" aria-pressed="'+(st===s)+'">'+s[0].toUpperCase()+s.slice(1)+'</button>'}).join('')+
+        '</div></td></tr>';
+    }).join('');
+
+    var drops=r.failed.map(function(d){return dropCard(d,'')}).concat(r.dups.map(function(d){return dropCard(d,'dup')}),r.seenDrops.map(function(d){return dropCard(d,'dup')}));
+    document.getElementById('drops').innerHTML=drops.join('')||'<p>Nothing dropped.</p>';
+  }
+  function step(cls,label,n,t){return '<div class="step '+cls+'"><span class="label">'+label+'</span><span class="n">'+n+'</span><span class="t">'+t+'</span></div>'}
+  function dropCard(d,cls){
+    return '<div class="drop"><span class="r '+cls+'">'+esc(d.why)+'</span><b>'+esc(d.x.sup)+'</b><span>'+esc(d.x.item)+'</span><span class="m">'+SOURCES[d.x.src]+' · '+d.x.r+' run · '+money(d.x.price)+'</span></div>';
+  }
+
+  document.getElementById('rulecards').innerHTML=
+    '<div class="card"><h3>1. Filters (any fail = drop)</h3><ul>'+
+      '<li>Category must be on the approved supply list.</li><li>Supplier must be verified.</li>'+
+      '<li>Unit price no more than 120% of the target price.</li><li>Lead time 14 days or less.</li></ul></div>'+
+    '<div class="card"><h3>2. Want score (0–10)</h3><ul>'+
+      '<li>Price vs target: up to 85% = 4, up to 95% = 3, up to 105% = 2, up to 120% = 1.</li>'+
+      '<li>Lead time: 3 days or less = 3, a week = 2, two weeks = 1.</li>'+
+      '<li>Terms: contract price or free returns = 3, Net 30 = 2, prepaid = 0.</li></ul></div>'+
+    '<div class="card"><h3>3. Match score (0–5)</h3><p>One point for each of the five spec items the clinic requires for that item (size, material, sterility and so on). Unmet items are listed as gaps.</p></div>'+
+    '<div class="card"><h3>4. Tiers and duplicates</h3><ul>'+
+      '<li><span class="tier A">A</span> Want 8+ and Match 4+. <span class="tier B">B</span> Want + Match 10+. <span class="tier C">C</span> the rest.</li>'+
+      '<li>Same record = same supplier and same item, whatever the wording. One row per record, listing every source.</li></ul></div>';
+
+  document.querySelector('.runs').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-run]');if(!b)return;
+    current=b.dataset.run;
+    this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});
+    render();
+  });
+  document.getElementById('rows').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-s]');if(!b)return;
+    status[b.dataset.id]=b.dataset.s;saveStatus();render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
