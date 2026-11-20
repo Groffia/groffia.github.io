@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stephen Groff | Senior BI Developer</title>
+<meta name="description" content="Senior BI Developer, 10+ years in healthcare, manufacturing and supply chain. Data models, semantic models and executive reporting, with AI built into the work.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://groffia.github.io/">
+<meta property="og:title" content="Stephen Groff | Senior BI Developer">
+<meta property="og:description" content="Data models, semantic models and executive reporting in healthcare and manufacturing, with AI built into the work.">
+<meta property="og:image" content="https://groffia.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E5BB8'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' fill='white' text-anchor='middle'%3ESG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#141D27; --muted:#566373; --rule:#D9DFE6;
+  --accent:#1E5BB8; --accent-soft:#E6EEFA; --ok:#23704F; --ok-soft:#E3F2EA; --warn:#8A5A00; --warn-soft:#FBF0D9;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1319; --surface:#151C24; --ink:#E5EAF0; --muted:#97A3B1; --rule:#28323D;
+    --accent:#86B4FF; --accent-soft:#1A2A42; --ok:#71CC9E; --ok-soft:#14291F; --warn:#F2C46B; --warn-soft:#2E2412; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1319; --surface:#151C24; --ink:#E5EAF0; --muted:#97A3B1; --rule:#28323D;
+  --accent:#86B4FF; --accent-soft:#1A2A42; --ok:#71CC9E; --ok-soft:#14291F; --warn:#F2C46B; --warn-soft:#2E2412; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.6}
+.wrap{max-width:880px; margin:0 auto; padding:56px 16px 72px; display:flex; flex-direction:column; gap:64px}
+h1,h2,h3{font-family:var(--display); text-wrap:balance; margin:0; line-height:1.15}
+p{margin:0}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px}
+.label{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+
+header{display:flex; flex-direction:column; gap:18px}
+header h1{font-size:clamp(40px,7vw,64px); font-weight:700; letter-spacing:-.02em}
+.headline{font-size:clamp(18px,2.4vw,21px); font-weight:600; line-height:1.4; max-width:44ch}
+.thesis{font-size:17px; color:var(--muted); max-width:62ch}
+.contact{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center}
+.contact a,.contact span{display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border:1px solid var(--rule); border-radius:6px;
+  background:var(--surface); color:var(--ink); text-decoration:none; font-size:15px}
+.contact a:hover{border-color:var(--accent); color:var(--accent)}
+.contact a.primary{background:var(--accent); border-color:var(--accent); color:var(--bg); font-weight:600}
+.contact a.primary:hover{filter:brightness(1.08); color:var(--bg)}
+.contact .where{border:0; background:none; padding-left:0; color:var(--muted)}
+.seeking{border-top:1px solid var(--rule); padding-top:16px; display:flex; flex-wrap:wrap; gap:6px 16px; align-items:baseline}
+
+section{display:flex; flex-direction:column; gap:24px}
+.head{display:flex; flex-direction:column; gap:8px}
+.head h2{font-size:clamp(26px,4vw,32px); font-weight:700}
+.head p{color:var(--muted); max-width:62ch}
+
+.projects{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
+.project{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.project h3{font-size:21px; font-weight:700}
+.project .where{font-size:14px; color:var(--muted); margin-top:-6px}
+.project p.desc{font-size:15px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px; border-radius:4px; color:var(--ok); background:var(--ok-soft)}
+.chip.wip{color:var(--warn); background:var(--warn-soft)}
+.tag{font-size:13px; padding:3px 10px; border:1px solid var(--rule); border-radius:999px}
+.tag.ai{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
+.links{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:auto; padding-top:4px; font-weight:600; font-size:15px}
+
+.jobs{display:flex; flex-direction:column; border-top:1px solid var(--rule)}
+.job{display:grid; grid-template-columns:150px minmax(0,1fr); gap:6px 28px; padding:22px 0; border-bottom:1px solid var(--rule)}
+.job .when{font-family:var(--mono); font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; padding-top:3px}
+.job h3{font-size:19px; font-weight:500}
+.job .org{color:var(--muted); font-size:15px; margin-bottom:8px}
+.job ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:5px; max-width:66ch}
+.job.early{padding:16px 0}
+.job.early h3{font-size:16px}
+.job.early p{font-size:15px; max-width:66ch}
+
+.skills{display:grid; grid-template-columns:minmax(0,1fr); gap:0; border-top:1px solid var(--rule)}
+.skill{display:grid; grid-template-columns:190px minmax(0,1fr); gap:6px 28px; padding:12px 0; border-bottom:1px solid var(--rule); font-size:15px}
+.skill b{font-weight:600}
+.list{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:5px; font-size:15px}
+
+footer{border-top:1px solid var(--rule); padding-top:20px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 24px; font-size:14px; color:var(--muted)}
+
+@media (max-width:720px){
+  .wrap{padding:36px 16px 56px; gap:48px}
+  .projects{grid-template-columns:minmax(0,1fr)}
+  .job,.skill{grid-template-columns:minmax(0,1fr)}
+  .project{padding:18px}
+}
+@media print{
+  :root{--bg:#fff; --surface:#fff}
+  .wrap{padding:0; gap:26px}
+  .contact a.primary{background:none; color:var(--ink)}
+  .project,.job{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="label">Minneapolis–Saint Paul</span>
+  <h1>Stephen Groff</h1>
+  <p class="headline">Senior BI Developer | Data Models, Semantic Models &amp; Executive Reporting in Healthcare and Manufacturing</p>
+  <p class="thesis">I build the data and semantic models business units rely on, and I bring AI into that work: Microsoft Copilot agents for my team and another business unit, and working tools I build with Claude Code.</p>
+  <div class="contact">
+    <a class="primary" href="https://www.linkedin.com/in/groffstephen" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="mailto:groff.stephen@gmail.com">groff.stephen@gmail.com</a>
+    <a href="tel:+16513007201">651-300-7201</a>
+  </div>
+  <div class="seeking">
+    <span class="label">Looking for</span>
+    <span>Senior analytics engineering and BI roles that bring AI into the data lifecycle.</span>
+  </div>
+</header>
+
+<section aria-labelledby="summary">
+  <div class="head">
+    <span class="label">Summary</span>
+    <h2 id="summary">10+ years of enterprise reporting</h2>
+  </div>
+  <p style="max-width:70ch">Senior BI developer with 10+ years building enterprise reporting in healthcare, manufacturing and supply chain. I lead development of the data and semantic models business units rely on, work with data stewards and stakeholders to define and measure KPIs, and build the dashboards on top, from director and executive views to regulatory compliance reporting. An earlier career in operations and process engineering, including managing a 31-person team, shapes how I turn business needs into data. At Tactile Medical I ran an audit of 600+ Power BI reports, retired more than 70%, and planned the ongoing migration of the rest to Fabric semantic models.</p>
+</section>
+
+<section aria-labelledby="ai">
+  <div class="head">
+    <span class="label">AI work</span>
+    <h2 id="ai">What I've built with AI</h2>
+    <p>At work and on my own: AI agents that answer questions from real content, and tools I direct Claude Code to build from written specs and tests.</p>
+  </div>
+  <div class="projects">
+
+    <article class="project">
+      <div class="chips"><span class="chip">At work</span></div>
+      <h3>Microsoft Copilot agents</h3>
+      <p class="where">Tactile Medical</p>
+      <p class="desc">On my own initiative, built Microsoft Copilot agents grounded in team SharePoint content, which my team and one other business unit use to ask what is happening on their projects, documents and email.</p>
+      <div class="chips"><span class="tag ai">Microsoft Copilot</span><span class="tag">SharePoint</span></div>
+    </article>
+
+    <article class="project">
+      <div class="chips"><span class="chip">Runs daily</span></div>
+      <h3>Multi-source data pipeline with Claude Code</h3>
+      <p class="where">Personal project, 2026</p>
+      <p class="desc">A working tool that pulls records from several web sources twice a day, removes duplicates, scores each record against written rules, and serves the results in a small web app backed by a database. Custom Claude Code skills and scheduled tasks run each step, and MCP connects Claude to the browser and documents.</p>
+      <div class="chips"><span class="tag ai">Claude Code</span><span class="tag ai">Custom skills</span><span class="tag ai">MCP</span><span class="tag">Scheduled tasks</span></div>
+    </article>
+
+    <article class="project">
+      <div class="chips"><span class="chip">Live demo</span></div>
+      <h3>Data Central: the journey of one row</h3>
+      <p class="where">Personal project, 2026</p>
+      <p class="desc">A scroll-through, 3D walk across the data lifecycle that follows one patient record at a fictional health system through eight stages: created, collected, cleaned and tested at a quality gate, stored in Bronze, Silver and Gold layers with sensitive fields encrypted, governed by role with every read logged, turned into a governed metric, and shown to an operations director on a dashboard that traces every number back to its row. Synthetic data. Built with Claude, working from written specs, test-first plans and an independent review of each task. Best on a desktop screen.</p>
+      <div class="chips"><span class="tag ai">Claude</span><span class="tag">Data lifecycle</span><span class="tag">Data governance</span><span class="tag">Three.js</span></div>
+      <div class="links"><a href="https://groffia.github.io/data-central/journey/">Open the demo ↗</a><a href="https://github.com/Groffia/data-central">Source on GitHub ↗</a></div>
+    </article>
+
+    <article class="project">
+      <div class="chips"><span class="chip">Live demo</span></div>
+      <h3>Praxis Fasti</h3>
+      <p class="where">Personal project, 2026</p>
+      <p class="desc">A time-block planner where every waking hour is either a block or a visible gap. Day, Week, Month and Recap views, a quick review of each block, and a recap of where the time went. The demo opens with sample data, and Sandbox mode lets you try every feature without saving anything. Built with Claude.</p>
+      <div class="chips"><span class="tag ai">Claude</span><span class="tag">Interactive app</span></div>
+      <div class="links"><a href="https://claude.ai/artifact/GAGR9k39PRJhTpa1KSDhQG">Open the demo ↗</a></div>
+    </article>
+
+  </div>
+</section>
+
+<section aria-labelledby="career">
+  <div class="head">
+    <span class="label">Experience</span>
+    <h2 id="career">Where I've done it</h2>
+  </div>
+  <div class="jobs">
+    <div class="job">
+      <span class="when">04/2023 – 11/2026</span>
+      <div>
+        <h3>Senior BI Developer (Operational Process Reporting Analytics)</h3>
+        <p class="org">Tactile Medical · Minneapolis, MN</p>
+        <ul>
+          <li>Senior developer among three BI developers on a five-person analytics team; lead new development and represent BI in analytics strategy discussions with business and IT leadership.</li>
+          <li>Lead development of 12+ semantic models serving four business units for self-service reporting and custom director and executive dashboards, defining and measuring KPIs with data stewards and business stakeholders.</li>
+          <li>Took over and built the gold layer in SQL Server for five source systems (8 to 60 tables each), including NetSuite, Salesforce, FileMaker and Brightree, plus part of the silver layer for two, where no one owned the data; also worked with UKG, Motus and NICE CXone data.</li>
+          <li>Ended conflicting numbers across the report catalog: audited 600+ Power BI reports, many duplicating the same data with different results, and retired more than 70%, leaving 168. Moving the rest onto single semantic models whose definitions and calculations are owned by business unit data stewards, one report at a time, and built a weekly dashboard tracking audit status.</li>
+          <li>On my own initiative, built Microsoft Copilot agents grounded in team SharePoint content, which my team and one other business unit use to ask what is happening on their projects, documents and email.</li>
+          <li>Built C-suite reporting: a real-time order operations display showing where orders were stuck in fulfillment, month-end sales forecasts, and automated nightly PDF distribution.</li>
+          <li>Built and support an integration pipeline bringing third-party vendor data into the warehouse.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="job">
+      <span class="when">11/2022 – 01/2023</span>
+      <div>
+        <h3>Data Engineer</h3>
+        <p class="org">Mynd · Oakland, CA (Remote)</p>
+        <ul>
+          <li>Stood up pre-built dbt models in Sigma Computing for self-service analytics, supplying the data behind the dashboards leadership used for product and revenue reporting.</li>
+          <li>Helped restructure dbt models, creating readable tables from the bronze layer and a repeatable pattern for cleaning data.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="job">
+      <span class="when">12/2019 – 01/2023</span>
+      <div>
+        <h3>Senior Data Consultant</h3>
+        <p class="org">Bright Health · Minneapolis–Saint Paul, MN (Remote)</p>
+        <ul>
+          <li>Built the regulatory compliance reporting from the ground up for a startup health plan: worked with the compliance manager to define what regulators required, located the source data, and built the models and reports for Commercial MLR, Medicare Advantage (Part C) and Prescription Drug Plans (Part D), and Medicaid Managed Care (MCAS and quality).</li>
+          <li>Developed data models and ETL in Databricks and Delta Lake (PySpark, Spark SQL), turning raw data from across the company's systems into report-ready compliance datasets for multiple markets.</li>
+          <li>Maintained and updated the compliance models ahead of each reporting cycle as regulatory requirements changed.</li>
+          <li>Worked with data engineering to resolve recurring Databricks cluster performance problems and set up dedicated compute; helped engineering extract data from parquet files.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="job">
+      <span class="when">01/2018 – 12/2019</span>
+      <div>
+        <h3>Quality Analytics Consultant</h3>
+        <p class="org">Caterpillar Inc. (contract, via The Vision Companies) · Minneapolis–Saint Paul, MN</p>
+        <ul>
+          <li>Hired as a contractor to build analytics for Quality Control. After managers in other departments saw the results, they asked to be brought on, and the work expanded to Manufacturing and Assembly, Shipping and Receiving, and Inventory Management.</li>
+          <li>Rebuilt 48+ established KPIs on new tools to Caterpillar's corporate standard formulas, replacing figures kept in individual Excel files. Found that most were calculated incorrectly because the plant lacked key data, and built a process that traced every KPI back to its data origin, so plant decisions rested on validated numbers.</li>
+          <li>Worked with Caterpillar's corporate data team in Peoria to get the facility access to SAP HANA data, then built the data models that started the facility's BI build-out on HANA.</li>
+          <li>Replaced manual Excel reporting with Tableau and Power BI dashboards tracking defect metrics (DPMO, DPM) and operational performance across the facility.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="job">
+      <span class="when">06/2016 – 12/2017</span>
+      <div>
+        <h3>Logistics &amp; Analytics Contractor</h3>
+        <p class="org">Delta Air Lines (contract) · Minneapolis–Saint Paul, MN</p>
+        <ul>
+          <li>Brought on for operations expertise to design the floor layout of a new 40,000 sq ft on-site parts warehouse at Delta's second-largest maintenance hub: rack placement, slotting, bin locations, and pick process.</li>
+          <li>Forecast stocking needs from historical parts usage so the warehouse was fully stocked at launch, and set up the kanban replenishment system for the 3,200-SKU ground maintenance supermarket that kept parts in stock after go-live.</li>
+          <li>Built a VBA tool to track all dangerous goods shipments in and out, including the shipper and record details required under FAA regulations, replacing the manual tracking and reporting the records owner did by hand.</li>
+          <li>Took on reporting beyond the original scope: automated monthly management reports on turnover, employee hours, ship rates, and shipping and receiving turnaround, loading visuals directly into PowerPoint so managers only had to add commentary.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="job early">
+      <span class="when">08/2011 – 10/2015</span>
+      <div>
+        <h3>Earlier operations career</h3>
+        <ul>
+          <li><b>Materials &amp; Logistics Supervisor</b>, Kalmar Solutions, Ottawa, KS (04/2015 – 10/2015): supervised 31 direct reports in a union manufacturing operation; implemented a new inventory program and a Lean transition built on Kaizen events.</li>
+          <li><b>Warehouse &amp; Inventory Manager</b>, Smart Warehousing, Lenexa, KS (07/2014 – 04/2015): oversaw inventory for 1,800 customers across 20+ U.S. warehouse facilities as a traveling interim manager.</li>
+          <li><b>Ocean Freight Logistics Manager</b>, Valley Forge Fabrics, Fort Lauderdale, FL (06/2013 – 06/2014): implemented a new global shipping strategy for ocean and domestic freight.</li>
+          <li><b>Process Engineer</b>, Caterpillar Inc., Joliet, IL (08/2011 – 02/2013): restructured a 30,000-part warehouse around a centralized inventory system, using Lean principles and SAP warehousing technology.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="skills">
+  <div class="head">
+    <span class="label">Skills</span>
+    <h2 id="skills">Toolkit</h2>
+  </div>
+  <div class="skills">
+    <div class="skill"><b>Applied AI</b><span>Microsoft Copilot agents (built for my team and one other business unit), Claude Code, AI-assisted data modeling and scripting, MCP (coursework)</span></div>
+    <div class="skill"><b>BI and analytics</b><span>Power BI, Tableau, Sigma, DAX, M (Power Query), Semantic Modeling, Self-Service Analytics, Executive Dashboards, KPI Standardization</span></div>
+    <div class="skill"><b>Data engineering</b><span>SQL Server (SSMS), Data Modeling, Medallion Architecture, ETL/ELT, dbt, Databricks, Delta Lake, PySpark, Spark SQL, Microsoft Fabric</span></div>
+    <div class="skill"><b>Languages</b><span>SQL, DAX, M, VBA, Python (AI-assisted)</span></div>
+    <div class="skill"><b>Source systems modeled</b><span>SAP HANA, NetSuite, Salesforce, FileMaker, Brightree</span></div>
+    <div class="skill"><b>Domain</b><span>Healthcare and Regulatory Reporting (Medicare Advantage, Medicaid, Commercial MLR), Manufacturing Quality Analytics, Supply Chain and Logistics</span></div>
+    <div class="skill"><b>Tools and collaboration</b><span>Azure DevOps, JIRA, GitHub, Third-Party Vendor Data Coordination, Stakeholder Engagement</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="training">
+  <div class="head">
+    <span class="label">Training and education</span>
+    <h2 id="training">Learning</h2>
+  </div>
+  <ul class="list">
+    <li>Introduction to Model Context Protocol and Model Context Protocol: Advanced Topics, Anthropic (2026)</li>
+    <li>Python for Data Science, AI &amp; Development, IBM (2026)</li>
+    <li>Healthcare AI coursework, LinkedIn Learning: AI for Healthcare, NLP Techniques for Clinical Datasets, Machine Learning Fundamentals for Healthcare (2026)</li>
+    <li>Generative AI and LLM coursework, LinkedIn Learning: Working with Large Language Models, GPT Foundations (2026)</li>
+    <li>Microsoft Power BI Desktop: Advanced DAX for Data Analysis, Maven Analytics (2023)</li>
+    <li><b>Bachelor of Science, Sociology</b>, Kansas State University</li>
+  </ul>
+</section>
+
+<footer>
+  <span>Stephen Groff · Minneapolis–Saint Paul</span>
+  <span>Updated November 2026</span>
+</footer>
+
+</div>
+</body>
+</html>
